@@ -1,13 +1,13 @@
-import db from "../database/database";
+import db from "../database/Database";
 import { Produto } from "../models/Produto";
 
 export class ProdutoRepository {
   salvar(produto: Produto): Produto {
     const resultado = db
-      .prepare("INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?)")
-      .run(produto.nome, produto.preco, produto.estoque);
+      .prepare("INSERT INTO produtos (nome_produto, categoria, preco, id_fornecedor) VALUES (?, ?, ?)")
+      .run(produto.nome_produto, produto.preco);
 
-    return { id: Number(resultado.lastInsertRowid), nome: produto.nome, preco: produto.preco, estoque: produto.estoque };
+    return { id: Number(resultado.lastInsertRowid), nome_produto: produto.nome_produto, categoria: produto.categoria, preco: produto.preco, id_fornecedor: produto.id_fornecedor};
   }
 
   listar(): Produto[] {

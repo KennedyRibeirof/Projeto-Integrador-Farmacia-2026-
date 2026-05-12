@@ -1,61 +1,98 @@
-import db from "../database/database";
+import db from "../database/Database";
 import { Venda } from "../models/Venda";
-import { VendaItem } from "../models/VendaItem";
-
-type VendaRow = { id: number; cliente_id: number; total: number };
-type VendaItemRow = {
-  id: number;
-  venda_id: number;
-  produto_id: number;
-  quantidade: number;
-  preco_unitario: number;
-  subtotal: number;
-};
 
 export class VendaRepository {
   salvar(venda: Venda): Venda {
-    const insertVenda = db.prepare("INSERT INTO vendas (cliente_id, total) VALUES (?, ?)");
-    const insertItem = db.prepare(
-      "INSERT INTO venda_itens (venda_id, produto_id, quantidade, preco_unitario, subtotal) VALUES (?, ?, ?, ?, ?)"
-    );
+    const resultado = db
+      .prepare(
+        `
+        INSERT INTO vendas
+        (id_cliente, endereco, data_venda, valor, status_venda)
+        VALUES (?, ?, ?, ?, ?)
+        `
+      )
+      .run(
+        venda.id_cliente,
+        venda.endereco,
+        venda.data_venda.toISOString(),
+        venda.valor,
+        venda.status_venda
+      );
 
-    const executar = db.transaction(() => {
-      const resultado = insertVenda.run(venda.clienteId, venda.total);
-      const vendaId = Number(resultado.lastInsertRowid);
-
-      const itensSalvos: VendaItem[] = venda.itens.map((item) => {
-        const res = insertItem.run(vendaId, item.produtoId, item.quantidade, item.precoUnitario, item.subtotal);
-        return {
-          id: Number(res.lastInsertRowid),
-          vendaId,
-          produtoId: item.produtoId,
-          quantidade: item.quantidade,
-          precoUnitario: item.precoUnitario,
-          subtotal: item.subtotal,
-        };
-      });
-
-      return { id: vendaId, clienteId: venda.clienteId, total: venda.total, itens: itensSalvos };
-    });
-
-    return executar();
+    return {
+      id: Number(resultado.lastInsertRowid),
+      id_cliente: venda.id_cliente,
+      endereco: venda.endereco,
+      data_venda: venda.data_venda,
+      valor: venda.valor,
+      status_venda: venda.status_venda,
+    };
   }
 
   listar(): Venda[] {
-    const vendas = db.prepare("SELECT * FROM vendas").all() as VendaRow[];
-    const buscarItens = db.prepare("SELECT * FROM venda_itens WHERE venda_id = ?");
+    return db.prepare("SELECT * FROM vendas").all() as Venda[];
+  }
 
-    return vendas.map((v) => {
-      const itensRows = buscarItens.all(v.id) as VendaItemRow[];
-      const itens: VendaItem[] = itensRows.map((i) => ({
-        id: i.id,
-        vendaId: i.venda_id,
-        produtoId: i.produto_id,
-        quantidade: i.quantidade,
-        precoUnitario: i.preco_unitario,
-        subtotal: i.subtotal,
-      }));
-      return { id: v.id, clienteId: v.cliente_id, total: v.total, itens };
-    });
+  buscarPorId(id: number): Venda | null {
+    return (
+      db.prepare("SELECT * FROM vendas WHERE id = ?").get(id) as Venda
+    ) ?? null;
+  }
+
+  buscarPorCliente(id_cliente: number): Venda[] {
+    return db
+      .prepare("SELECT * FROM vendas WHERE id_cliente = ?")
+      .all(id_cliente) as Venda[];
+  }
+
+  buscarPorEndereco(endereco: string): Venda[] {
+    return db
+      .prepare("SELECT * FROM vendas WHERE endereco LIKE ?")
+      .all(`%${endereco}%`) as Venda[];
+  }
+
+  buscarPorStatus(status_venda: string): Venda[] {
+    return db
+      .prepare("SELECT * FROM vendas WHERE status_venda = ?")
+      .all(status_venda) as Venda[];
+  }
+
+  buscarPorData(data_venda: string): Venda[] {
+    return db
+      .prepare("SELECT * FROM vendas WHERE date(data_venda) = date(?)")
+      .all(data_venda) as Venda[];
+  }
+
+  atualizar(id: number, venda: Venda): boolean {
+    const resultado = db
+      .prepare(
+        `
+        UPDATE vendas SET
+          id_cliente = ?,
+          endereco = ?,
+          data_venda = ?,
+          valor = ?,
+          status_venda = ?
+        WHERE id = ?
+        `
+      )
+      .run(
+        venda.id_cliente,
+        venda.endereco,
+        venda.data_venda.toISOString(),
+        venda.valor,
+        venda.status_venda,
+        id
+      );
+
+    return resultado.changes > 0;
+  }
+
+  deletar(id: number): boolean {
+    const resultado = db
+      .prepare("DELETE FROM vendas WHERE id = ?")
+      .run(id);
+
+    return resultado.changes > 0;
   }
 }

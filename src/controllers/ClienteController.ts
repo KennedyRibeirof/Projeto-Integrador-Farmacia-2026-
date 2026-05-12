@@ -54,8 +54,10 @@ export function ClienteController() {
       }
 
       const cliente = repository.salvar({
-        nome: nome.trim(),
+        nome_completo: nome.trim(),
         email: email.trim(),
+        senha: "senha123", // Senha padrão para simplificar (não recomendado em produção)
+        data_cadastro: new Date(),
       });
 
       return res.status(201).json(cliente);

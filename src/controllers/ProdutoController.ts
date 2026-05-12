@@ -66,9 +66,10 @@ export function ProdutoController() {
       }
 
       const produto = repository.salvar({
-        nome: nome.trim(),
+        nome_produto: nome.trim(),
+        categoria: nome.trim(),
         preco: Number(preco),
-        estoque: Number(estoque),
+        id_fornecedor: 1, // Fornecedor padrão para simplificar (deve ser selecionado em produção)
       });
 
       return res.status(201).json(produto);

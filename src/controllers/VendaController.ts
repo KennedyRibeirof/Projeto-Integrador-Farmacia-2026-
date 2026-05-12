@@ -72,9 +72,11 @@ export function VendaController() {
 
       // ✅ salva venda
       const venda = vendaRepository.salvar({
-        clienteId,
-        total,
-        itens: itensDaVenda,
+        id_cliente: clienteId,
+        data_venda: new Date(),
+        valor: total,
+        endereco: "Endereço de exemplo", // Substitua pelo endereço real
+        status_venda: "Pendente",
       });
 
       // ✅ atualiza estoque

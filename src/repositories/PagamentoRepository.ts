@@ -1,4 +1,5 @@
-import Database from "../database/database";
+import Database from "better-sqlite3";
+import db from "../database/Database";
 import { Pagamento } from "../models/Pagamento";
 
 export class PagamentoRepository {

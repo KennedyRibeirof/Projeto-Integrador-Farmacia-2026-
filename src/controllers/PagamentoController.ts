@@ -14,12 +14,13 @@ export class PagamentoController {
         return res.status(400).json({ erro: "id_venda e metodo_pagamento são obrigatórios" });
       }
 
-      const pagamento: Pagamento = {
+      const Pagamento: Pagamento = {
         id_venda,
-        metodo_pagamento
+        metodo_pagamento,
+        status_pagamento: "Pendente" // Status inicial
       };
 
-      const novo = repository.criar(pagamento);
+      const novo = repository.criar(Pagamento);
       return res.status(201).json(novo);
 
     } catch (error) {
@@ -74,10 +75,7 @@ export class PagamentoController {
         return res.status(400).json({ erro: "id_venda e metodo_pagamento são obrigatórios" });
       }
 
-      const atualizado = repository.atualizar(Number(id), {
-        id_venda,
-        metodo_pagamento
-      });
+      const atualizado = repository.atualizar(Number(id), { id_venda, metodo_pagamento } as Pagamento);
 
       if (!atualizado) {
         return res.status(404).json({ erro: "Pagamento não encontrado" });

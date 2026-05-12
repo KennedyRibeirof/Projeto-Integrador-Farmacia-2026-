@@ -1,4 +1,5 @@
-import db from "../database/database";
+import Database from "better-sqlite3";
+import db from "../database/Database";
 import { Estoque } from "../models/Estoque";
 
 export class EstoqueRepository {
@@ -44,7 +45,9 @@ export class EstoqueRepository {
     `);
 
     const estoque = stmt.get(id);
-    return estoque || null;
+    return estoque // @ts-ignore
+      ? (estoque as Estoque)
+      : null;
   }
 
   buscarPorProduto(id_produto: string): Estoque | null {
@@ -53,7 +56,9 @@ export class EstoqueRepository {
     `);
 
     const estoque = stmt.get(id_produto);
-    return estoque || null;
+    return estoque // @ts-ignore
+      ? (estoque as Estoque)
+      : null;
   }
 
   atualizar(id: number, estoque: Estoque): boolean {

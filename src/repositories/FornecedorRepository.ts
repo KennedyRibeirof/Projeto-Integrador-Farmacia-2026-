@@ -1,4 +1,5 @@
-import db from "../database/database";
+import Database from "better-sqlite3";
+import db from "../database/Database";
 import { Fornecedor } from "../models/Fornecedor";
 
 export class FornecedorRepository {
@@ -44,7 +45,9 @@ export class FornecedorRepository {
     `);
 
     const fornecedor = stmt.get(id);
-    return fornecedor || null;
+    return fornecedor // @ts-ignore
+      ? (fornecedor as Fornecedor)
+      : null;
   }
 
   buscarPorCnpj(cnpj: string): Fornecedor | null {
@@ -53,7 +56,9 @@ export class FornecedorRepository {
     `);
 
     const fornecedor = stmt.get(cnpj);
-    return fornecedor || null;
+    return fornecedor // @ts-ignore
+      ? (fornecedor as Fornecedor)
+      : null;
   }
 
   atualizar(id: number, fornecedor: Fornecedor): boolean {
