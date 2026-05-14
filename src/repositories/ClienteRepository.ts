@@ -8,7 +8,8 @@ export class ClienteRepository {
       .prepare("INSERT INTO clientes (nome, email) VALUES (?, ?)")
       .run(cliente.nome_completo, cliente.email, cliente.senha, cliente.data_cadastro);
 
-    return { id: Number(resultado.lastInsertRowid), nome_completo: cliente.nome_completo, email: cliente.email, senha: cliente.senha, data_cadastro: cliente.data_cadastro };
+    return { id: Number(resultado.lastInsertRowid), nome_completo: cliente.nome_completo, 
+      email: cliente.email, senha: cliente.senha, data_cadastro: cliente.data_cadastro };
   }
 
   listar(): Cliente[] {

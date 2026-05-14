@@ -12,6 +12,6 @@ ClienteController();
 ProdutoController();
 VendaController();
 
-app.listen(3000, () => {
-  console.log("Servidor rodando em http://localhost:3000");
+app.listen(3008, () => {
+  console.log("Servidor rodando em http://localhost:3008");
 });
